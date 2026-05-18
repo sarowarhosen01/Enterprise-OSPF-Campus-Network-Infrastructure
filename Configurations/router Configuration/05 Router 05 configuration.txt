@@ -1,0 +1,53 @@
+enable
+configure terminal
+
+!
+! Basic settings
+!
+hostname Router-E
+!
+no ip domain-lookup
+!
+!
+!
+! Interfaces
+!
+interface serial0/0/1
+ description Uplink_to_Router-B_Area1
+ ip address 10.0.1.2 255.255.255.252
+ no shutdown
+
+!
+interface fa0/0
+ ip address 192.168.10.1 255.255.255.0
+ no shutdown
+
+!
+interface Loopback1
+ description User_VLAN_10
+ ip address 192.168.10.1 255.255.255.0
+!
+interface Loopback2
+ description User_VLAN_11
+ ip address 192.168.11.1 255.255.255.0
+!
+!
+! OSPF Internal – Area 1
+!
+router ospf 1
+ router-id 5.5.5.5
+!
+ network 10.0.1.0 0.0.0.3 area 1
+ network 192.168.10.0 0.0.0.255 area 1
+ network 192.168.11.0 0.0.0.255 area 1
+!
+! Make ALL interfaces passive except uplink
+ passive-interface default
+ no passive-interface GigabitEthernet0/0
+!
+!
+! Management
+
+
+end
+write memory

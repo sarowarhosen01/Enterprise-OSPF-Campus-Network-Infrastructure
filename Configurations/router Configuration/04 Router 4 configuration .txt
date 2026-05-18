@@ -1,0 +1,53 @@
+enable
+configure terminal
+
+!
+! Basic settings
+!
+hostname Router-D
+!
+no ip domain-lookup
+!
+!
+! Interfaces
+!
+interface Loopback0
+ ip address 4.4.4.4 255.255.255.255
+!
+interface serial0/0/1
+ description Link_to_Router-C_Area0
+ ip address 10.0.34.2 255.255.255.252
+ no shutdown
+!
+interface serial0/0/0
+ description Link_to_Router-F_Area2
+ ip address 10.0.2.1 255.255.255.252
+ no shutdown
+
+!
+interface serial0/2/1
+ description Link_to_Router-F_Area2
+ ip address 10.0.34.2 255.255.255.252
+ no shutdown
+!
+!
+! OSPF Multi-area + Summarization
+!
+router ospf 1
+ router-id 4.4.4.4
+!
+ network 10.0.34.0 0.0.0.3 area 0
+ network 10.0.2.0 0.0.0.3 area 2
+ network 10.0.34.0 0.0.0.3 area 2
+ network 4.4.4.4 0.0.0.0 area 0
+!
+! Summarize Area 2 networks to Area 0
+ area 2 range 192.168.20.0 255.255.254.0
+!
+! Passive toward branch
+ passive-interface serial0/0/0
+!
+!
+! Management
+end
+write memory

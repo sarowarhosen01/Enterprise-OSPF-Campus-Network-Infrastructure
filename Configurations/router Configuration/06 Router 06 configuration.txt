@@ -1,0 +1,53 @@
+enable
+configure terminal
+
+!
+! Basic settings
+!
+hostname Router-F
+!
+no ip domain-lookup
+!
+!
+! Interfaces
+!
+interface serial0/0/1
+ description Uplink_to_Router-D_Area2
+ ip address 10.0.2.2 255.255.255.252
+ no shutdown
+
+!
+interface fa0/0
+ description Uplink_to_Router-D_Area2
+ ip address 192.168.2.1 255.255.255.252
+ no shutdown
+
+!
+interface Loopback1
+ description User_VLAN_20
+ ip address 192.168.20.1 255.255.255.0
+!
+interface Loopback2
+ description User_VLAN_21
+ ip address 192.168.21.1 255.255.255.0
+!
+!
+! OSPF Internal – Area 2
+!
+router ospf 1
+ router-id 6.6.6.6
+!
+ network 10.0.2.0 0.0.0.3 area 2
+ network 192.168.20.0 0.0.0.255 area 2
+ network 192.168.21.0 0.0.0.255 area 2
+!
+! Passive all except uplink
+ passive-interface default
+ no passive-interface interface serial0/0/1
+!
+!
+! Management
+
+
+end
+write memory

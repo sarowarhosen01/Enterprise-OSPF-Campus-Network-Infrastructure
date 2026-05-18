@@ -1,0 +1,49 @@
+enable
+configure terminal
+
+!
+! Basic settings
+!
+hostname Router-B
+!
+no ip domain-lookup
+!
+
+!
+! Interface configurations
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+!
+interface serial0/0/1
+ description Link_to_Router-A_Area0
+ ip address 10.0.12.2 255.255.255.252
+ no shutdown
+!
+interface serial0/0/0
+ description Link_to_Router-E_Area1
+ ip address 10.0.1.1 255.255.255.252
+ no shutdown
+!
+!
+! OSPF Configuration (Multi-area + Summarization + Passive)
+!
+router ospf 1
+ router-id 2.2.2.2
+!
+ network 10.0.12.0 0.0.0.3 area 0
+ network 10.0.1.0 0.0.0.3 area 1
+ network 2.2.2.2 0.0.0.0 area 0
+!
+! Route summarization from Area 1 to Area 0
+ area 1 range 192.168.10.0 255.255.254.0
+!
+! Passive interface on branch side
+ passive-interface serial0/0/0
+!
+!
+! Management
+
+!
+end
+write memory
